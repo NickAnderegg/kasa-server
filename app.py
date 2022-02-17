@@ -160,6 +160,28 @@ def turn_off_device(device_name):
     return format_device_power_state_response(toggled)
 
 
+@app.route("/devices/<string:device_name>/offon", methods=["PUT", "POST"])
+def turn_offon_device(device_name):
+    """
+    Turns off a Kasa smart device
+    /devices/entry%20lamp%20plug/off
+    ---
+    PUT:
+      responses:
+        204:
+            description: Returns a no content response upon success
+            content: application/json
+        404:
+            description: Returns an error when a device with the specified name is not found
+            content: application/json
+    """
+
+    toggled = kasa_device_manager.turn_off_device_by_name(device_name)
+    toggled = kasa_device_manager.turn_on_device_by_name(device_name)
+
+    return format_device_power_state_response(toggled)
+
+
 # Helper functions
 def format_device(device, ip_address, include_device_sys_info=False):
     url_formatted_device_name = device.alias.replace(" ", "%20")
@@ -172,6 +194,7 @@ def format_device(device, ip_address, include_device_sys_info=False):
             "toggle": {"href": f"/devices/{url_formatted_device_name}/toggle"},
             "on": {"href": f"/devices/{url_formatted_device_name}/on"},
             "off": {"href": f"/devices/{url_formatted_device_name}/off"},
+            "offon": {"href": f"/devices/{url_formatted_device_name}/offon"},
         },
     }
 
